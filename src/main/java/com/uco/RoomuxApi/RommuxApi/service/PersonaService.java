@@ -14,6 +14,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
 import java.sql.SQLException;
+import java.util.List;
 
 @Service
 @Repository
@@ -60,8 +61,23 @@ public class PersonaService {
     public  void delete(String email){
 
     }
-    public  void consult(String email){
+    public  PersonaDomain consultByEmail(String email) throws RoomuxApiException {
+        if(!PersonaValidator.emailIsValid(email)){
+            throw new RoomuxApiException();
+        }
+        try {
+            return PersonaTransformer.entityToDomain(personaRepository.findBycorreoElectronico(email));
+        }catch (Exception e){
+            throw new RoomuxApiException();
+        }
+    }
 
+    public List<PersonaDomain> consultAll() throws RoomuxApiException {
+        try {
+            return PersonaTransformer.entityListToDomainList(personaRepository.findAll());
+        }catch (Exception e){
+            throw new RoomuxApiException();
+        }
     }
 
 

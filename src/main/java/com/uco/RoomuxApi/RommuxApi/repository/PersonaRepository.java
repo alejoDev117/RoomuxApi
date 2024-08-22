@@ -2,11 +2,15 @@ package com.uco.RoomuxApi.RommuxApi.repository;
 
 import com.uco.RoomuxApi.RommuxApi.entity.PersonaEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.UUID;
 
 @Repository
 public interface PersonaRepository extends JpaRepository<PersonaEntity, UUID>{
+
+    @Query(value = "SELECT * FROM persona WHERE correo_usuario = ?1",nativeQuery = true)
+    PersonaEntity findBycorreoElectronico(String correoElectronico);
 
 }
