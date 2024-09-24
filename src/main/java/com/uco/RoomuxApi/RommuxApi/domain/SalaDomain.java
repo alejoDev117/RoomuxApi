@@ -1,4 +1,4 @@
 package com.uco.RoomuxApi.RommuxApi.domain;
 
-public class AgendaDomain {
+public class SalaDomain {
 }

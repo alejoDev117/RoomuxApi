@@ -1,7 +1,9 @@
 package com.uco.RoomuxApi.RommuxApi.controller;
 
+import com.uco.RoomuxApi.RommuxApi.controller.response.RoomuxResponse;
 import com.uco.RoomuxApi.RommuxApi.crossCutting.exception.RoomuxApiException;
 import com.uco.RoomuxApi.RommuxApi.domain.PersonaDomain;
+import com.uco.RoomuxApi.RommuxApi.domain.UsuarioDomain;
 import com.uco.RoomuxApi.RommuxApi.service.PersonaService;
 import jakarta.persistence.PersistenceException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,37 +20,87 @@ public class PersonaController {
     private PersonaService personaService;
 
     @GetMapping("/format/register")
-    public ResponseEntity<PersonaDomain> getDummy(){
-        return new ResponseEntity<>(PersonaDomain.createWithDefaults(), HttpStatus.OK);
+    public ResponseEntity<RoomuxResponse<PersonaDomain>> getDummy(){
+        RoomuxResponse<PersonaDomain> response = new RoomuxResponse<>();
+        response.setData(PersonaDomain.createWithDefaults());
+        return new ResponseEntity<>(response,HttpStatus.OK);
     }
 
     @GetMapping("all/person")
-    public ResponseEntity<List<PersonaDomain>> getAll(){
-        try{
-            return new ResponseEntity<>(personaService.consultAll(),HttpStatus.OK);
-        }catch (RoomuxApiException re){
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+    public ResponseEntity<RoomuxResponse<List<PersonaDomain>>> getAll(){
+        RoomuxResponse<List<PersonaDomain>> response = new RoomuxResponse<>();
+        try {
+            response.setData(personaService.consultAll());
+            return new ResponseEntity<>(response,HttpStatus.OK);
+        } catch (RoomuxApiException e) {
+            response.setMessage(e.getMessage());
+            return new ResponseEntity<>(response,HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
     @GetMapping("/person")
-    public ResponseEntity<PersonaDomain> getByEmail(@RequestParam String email){
+    public ResponseEntity<RoomuxResponse<PersonaDomain>> getByEmail(@RequestParam String email){
+        RoomuxResponse<PersonaDomain> response = new RoomuxResponse<>();
         try {
-            return new ResponseEntity<>(personaService.consultByEmail(email),HttpStatus.OK);
-        } catch (RoomuxApiException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+            response.setData(personaService.consultByEmail(email));
+            return new ResponseEntity<>(response,HttpStatus.OK);
+        } catch (RoomuxApiException re) {
+            response.setMessage(re.getMessage());
+            return new ResponseEntity<>(response,HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            response.setMessage(e.getMessage());
+            return new ResponseEntity<>(response,HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
     @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestBody PersonaDomain persona){
+    public ResponseEntity<RoomuxResponse<String>> register(@RequestBody PersonaDomain persona){
+        RoomuxResponse<String> response = new RoomuxResponse<>();
         try{
             personaService.create(persona);
-            return new ResponseEntity<>("Usuario Registrado Con Exito!!!",HttpStatus.OK);
+            response.setMessage("Usuario Creado con exito!!!");
+            return new ResponseEntity<>(response,HttpStatus.OK);
         }catch (RoomuxApiException re){
-            return new ResponseEntity<>(re.getMessage(),HttpStatus.BAD_REQUEST);
+            response.setMessage(re.getMessage());
+            return new ResponseEntity<>(response,HttpStatus.BAD_REQUEST);
         }catch (PersistenceException pe){
-            return new ResponseEntity<>(pe.getMessage(),HttpStatus.BAD_REQUEST);
+            response.setMessage(pe.getMessage());
+            return new ResponseEntity<>(response,HttpStatus.BAD_REQUEST);
         }catch (Exception e){
-            return new ResponseEntity<>(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
+            response.setMessage(e.getMessage());
+            return new ResponseEntity<>(response,HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @PutMapping("/person")
+    public ResponseEntity<RoomuxResponse<String>> update(@RequestBody PersonaDomain persona){
+        RoomuxResponse<String> response = new RoomuxResponse<>();
+        try {
+            personaService.update(persona);
+            response.setMessage("Datos del usuario actualizados con exito");
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }catch (RoomuxApiException re){
+            response.setMessage(re.getMessage());
+            return new ResponseEntity<>(response,HttpStatus.BAD_REQUEST);
+        }catch (Exception e){
+            response.setMessage(e.getMessage());
+            return new ResponseEntity<>(response,HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    @DeleteMapping("/person")
+    public ResponseEntity<RoomuxResponse<String>> delete(@RequestParam String email){
+        RoomuxResponse<String> response = new RoomuxResponse<>();
+        try {
+            personaService.delete(email);
+            response.setMessage("Usuario eliminado con exito");
+            return new ResponseEntity<>(response,HttpStatus.OK);
+        } catch (RoomuxApiException r) {
+            response.setMessage(r.getMessage());
+            return new ResponseEntity<>(response,HttpStatus.BAD_REQUEST);
+        }catch (Exception e){
+            response.setMessage(e.getMessage());
+            return  new ResponseEntity<>(response,HttpStatus.BAD_REQUEST);
+        }
+    }
+
 }
+
+

@@ -1,9 +1,11 @@
 package com.uco.RoomuxApi.RommuxApi.service;
 
 import com.uco.RoomuxApi.RommuxApi.crossCutting.exception.RoomuxApiException;
+import com.uco.RoomuxApi.RommuxApi.crossCutting.utils.UtilText;
 import com.uco.RoomuxApi.RommuxApi.domain.PersonaDomain;
 import com.uco.RoomuxApi.RommuxApi.domain.UsuarioDomain;
 import com.uco.RoomuxApi.RommuxApi.repository.PersonaRepository;
+import com.uco.RoomuxApi.RommuxApi.repository.UsuarioRepository;
 import com.uco.RoomuxApi.RommuxApi.service.transformer.PersonaTransformer;
 import com.uco.RoomuxApi.RommuxApi.service.validator.PersonaValidator;
 import jakarta.persistence.PersistenceException;
@@ -13,6 +15,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
+import javax.xml.crypto.Data;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -24,6 +27,8 @@ public class PersonaService {
     private final PersonaRepository personaRepository;
     @Autowired
     private final UsuarioService usuarioService;
+    @Autowired
+    private UsuarioRepository usuarioRepository;
 
     public PersonaService(PersonaRepository personaRepository, UsuarioService usuarioService) {
         this.personaRepository = personaRepository;
@@ -55,20 +60,51 @@ public class PersonaService {
         }
 
     }
-    public  void update(int id){
-
+    public  void update(PersonaDomain domain) throws Exception {
+        if(!PersonaValidator.nameIsValid(domain.getNombre())){
+            throw new RoomuxApiException("Error, el nuevo nombre no posee un formato válido, no puede tener numeros ni caracteres especiales");
+        }
+        if(!PersonaValidator.idIsValid(domain.getId())){
+            throw new RoomuxApiException("Error, el identificador no posee un formato válido");
+        }
+        try{
+            personaRepository.updateNombre(domain.getNombre(),domain.getId());
+        }catch (DataAccessException da){
+            throw new RoomuxApiException("No fue posible encontrar un usuario registrado con ese identificador");
+        }catch (Exception e){
+            throw new Exception("Ocurrió un error inesperado, intente nuevamente y si el problema persiste contacte a un administrador");
+        }
     }
-    public  void delete(String email){
 
-    }
-    public  PersonaDomain consultByEmail(String email) throws RoomuxApiException {
+    public     void delete(String email) throws Exception {
         if(!PersonaValidator.emailIsValid(email)){
-            throw new RoomuxApiException();
+            throw new RoomuxApiException("Error, el correo electrónico no tiene el formato válido");
+        }
+        try{
+            personaRepository.DeleteByEmail(email);
+            usuarioService.delete(email);
+        }catch (DataAccessException da){
+            throw new RoomuxApiException("Error, no fue posible encontrar un usuario con el correo electronico");
+        }catch (Exception e){
+            throw new Exception("Ocurrió un error inesperado, intente nuevamente y si el problema persiste contacte a un administrador");
+        }
+    }
+
+
+
+    public  PersonaDomain consultByEmail(String email) throws Exception {
+        if(!PersonaValidator.emailIsValid(email)){
+            throw new RoomuxApiException("El correo electrónico no posee un formato válido");
+        }
+        if(email.equals(UtilText.getDefaultTextValue())){
+            throw new RoomuxApiException("El correo debe estar presente para la consulta");
         }
         try {
             return PersonaTransformer.entityToDomain(personaRepository.findBycorreoElectronico(email));
+        }catch (DataAccessException d){
+            throw new RoomuxApiException("No existe un usuario registrado con dicho correo electronico");
         }catch (Exception e){
-            throw new RoomuxApiException();
+            throw new Exception("Ocurrió un error inesperado, intente nuevamente y si el problema persiste contacte a un administrador\n");
         }
     }
 
@@ -76,7 +112,7 @@ public class PersonaService {
         try {
             return PersonaTransformer.entityListToDomainList(personaRepository.findAll());
         }catch (Exception e){
-            throw new RoomuxApiException();
+            throw new RoomuxApiException("Ocurrió un error inesperado, por favor intente nuevamente y si el error persiste consulte con un administrador\n");
         }
     }
 
