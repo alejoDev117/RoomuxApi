@@ -34,6 +34,9 @@ public class PersonaController {
             return new ResponseEntity<>(response,HttpStatus.OK);
         } catch (RoomuxApiException e) {
             response.setMessage(e.getMessage());
+            return new ResponseEntity<>(response,HttpStatus.NOT_FOUND);
+        } catch (Exception r){
+            response.setMessage(r.getMessage());
             return new ResponseEntity<>(response,HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

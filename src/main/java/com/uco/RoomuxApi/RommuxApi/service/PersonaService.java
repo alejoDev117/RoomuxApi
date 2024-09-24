@@ -60,39 +60,45 @@ public class PersonaService {
         }
 
     }
-    public  void update(PersonaDomain domain) throws Exception {
+    public void update(PersonaDomain domain) throws Exception {
         if(!PersonaValidator.nameIsValid(domain.getNombre())){
-            throw new RoomuxApiException("Error, el nuevo nombre no posee un formato válido, no puede tener numeros ni caracteres especiales");
+            throw new RoomuxApiException("Error, el nuevo nombre no posee un formato válido, no puede tener números ni caracteres especiales");
         }
         if(!PersonaValidator.idIsValid(domain.getId())){
             throw new RoomuxApiException("Error, el identificador no posee un formato válido");
         }
-        try{
-            personaRepository.updateNombre(domain.getNombre(),domain.getId());
-        }catch (DataAccessException da){
-            throw new RoomuxApiException("No fue posible encontrar un usuario registrado con ese identificador");
-        }catch (Exception e){
+        try {
+            int rowsUpdated = personaRepository.updateNombre(domain.getNombre(), domain.getId());
+            if (rowsUpdated == 0) {
+                throw new RoomuxApiException("No fue posible encontrar un usuario registrado con ese identificador");
+            }
+        }catch (RoomuxApiException r){
+            throw r;
+        } catch (Exception e) {
             throw new Exception("Ocurrió un error inesperado, intente nuevamente y si el problema persiste contacte a un administrador");
         }
     }
 
-    public     void delete(String email) throws Exception {
+
+    public  void delete(String email) throws Exception {
         if(!PersonaValidator.emailIsValid(email)){
             throw new RoomuxApiException("Error, el correo electrónico no tiene el formato válido");
         }
         try{
-            personaRepository.DeleteByEmail(email);
+           int rows =  personaRepository.DeleteByEmail(email);
+           if(rows == 0){
+               throw new RoomuxApiException("Error, no fue posible encontrar un usuario con el correo electronico");
+           }
             usuarioService.delete(email);
-        }catch (DataAccessException da){
-            throw new RoomuxApiException("Error, no fue posible encontrar un usuario con el correo electronico");
+        }catch (RoomuxApiException r){
+            throw r;
         }catch (Exception e){
             throw new Exception("Ocurrió un error inesperado, intente nuevamente y si el problema persiste contacte a un administrador");
         }
     }
 
 
-
-    public  PersonaDomain consultByEmail(String email) throws Exception {
+    public PersonaDomain consultByEmail(String email) throws Exception {
         if(!PersonaValidator.emailIsValid(email)){
             throw new RoomuxApiException("El correo electrónico no posee un formato válido");
         }
@@ -100,18 +106,27 @@ public class PersonaService {
             throw new RoomuxApiException("El correo debe estar presente para la consulta");
         }
         try {
-            return PersonaTransformer.entityToDomain(personaRepository.findBycorreoElectronico(email));
-        }catch (DataAccessException d){
-            throw new RoomuxApiException("No existe un usuario registrado con dicho correo electronico");
-        }catch (Exception e){
+            var persona = personaRepository.findBycorreoElectronico(email)
+                    .orElseThrow(() -> new RoomuxApiException("No se encuentra un usuario registrado con el correo electrónico"));
+            return PersonaTransformer.entityToDomain(persona);
+        } catch (RoomuxApiException e) {
+            throw e;
+        } catch (Exception e) {
             throw new Exception("Ocurrió un error inesperado, intente nuevamente y si el problema persiste contacte a un administrador\n");
         }
     }
 
+
     public List<PersonaDomain> consultAll() throws RoomuxApiException {
         try {
-            return PersonaTransformer.entityListToDomainList(personaRepository.findAll());
-        }catch (Exception e){
+            var personas = personaRepository.findAll();
+            if(personas.isEmpty()){
+                throw new RoomuxApiException("No se encontraron registros");
+            }
+            return PersonaTransformer.entityListToDomainList(personas);
+        }catch (RoomuxApiException e) {
+            throw e;
+        }catch(Exception e){
             throw new RoomuxApiException("Ocurrió un error inesperado, por favor intente nuevamente y si el error persiste consulte con un administrador\n");
         }
     }

@@ -23,10 +23,13 @@ public class UsuarioController {
     public ResponseEntity<RoomuxResponse<List<UsuarioDomain>>> getAll(){
         RoomuxResponse<List<UsuarioDomain>> response = new RoomuxResponse<>();
         try{
-            response.setData(usuarioService.get_all());
+            response.setData(usuarioService.getAll());
             return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (RoomuxApiException e) {
             response.setMessage(e.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+        }catch (Exception r){
+            response.setMessage(r.getMessage());
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -41,10 +44,11 @@ public class UsuarioController {
             return new ResponseEntity<>(response,HttpStatus.OK);
         }catch (RoomuxApiException r){
             response.setMessage(r.getMessage());
-            return new ResponseEntity<>(response,HttpStatus.BAD_REQUEST);
-        }catch (Exception e) {
-            response.setMessage(e.getMessage());
             return new ResponseEntity<>(response,HttpStatus.NOT_ACCEPTABLE);
+        }catch (Exception e) {
+            response.setData("Code -1");
+            response.setMessage(e.getMessage());
+            return new ResponseEntity<>(response,HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
