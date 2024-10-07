@@ -27,8 +27,7 @@ public class PersonaService {
     private final PersonaRepository personaRepository;
     @Autowired
     private final UsuarioService usuarioService;
-    @Autowired
-    private UsuarioRepository usuarioRepository;
+
 
     public PersonaService(PersonaRepository personaRepository, UsuarioService usuarioService) {
         this.personaRepository = personaRepository;
