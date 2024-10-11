@@ -1,5 +1,6 @@
 package com.uco.RoomuxApi.RommuxApi.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.uco.RoomuxApi.RommuxApi.crossCutting.utils.UtilDateTime;
 import com.uco.RoomuxApi.RommuxApi.crossCutting.utils.UtilEnum;
 import com.uco.RoomuxApi.RommuxApi.crossCutting.utils.UtilUUID;
@@ -20,15 +21,18 @@ import java.util.UUID;
 @Getter
 @Setter
 public class ReservaDomain  {
-    private UUID identificador;
-    private UsuarioDomain autor;
-    private Date fechaInicio;
-    private Date fechaFin;
-    private String tipoReserva;
-    private String frecuencia;
-    private LocalDateTime horaCreacion;
-    private SalaDomain sala;
-    private List<DetalleReservaDomain> detalleReserva;
+        private UUID identificador;
+        private UsuarioDomain autor;
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "UTC")
+        private Date fechaInicio;
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "UTC")
+        private Date fechaFin;
+        private String tipoReserva;
+        private String frecuencia;
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
+        private LocalDateTime horaCreacion;
+        private SalaDomain sala;
+        private List<DetalleReservaDomain> detalleReserva;
 
 
     public static ReservaDomain createWithDefaults() {
@@ -40,4 +44,6 @@ public class ReservaDomain  {
                 horaCreacion(UtilDateTime.getDefaultValueDateTime()).
                 sala(SalaDomain.createWithDefaults()).detalleReserva(new ArrayList<>()).build();
     }
+
+
 }

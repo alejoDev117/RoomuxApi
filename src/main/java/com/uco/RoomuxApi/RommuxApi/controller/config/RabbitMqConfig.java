@@ -12,58 +12,118 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class RabbitMqConfig {
-
+///////////////SALA////////////////////////////
     @Value("${rabbit.exchange.name.sala}")
-    private String exchange;
+    private String exchangeSala;
     @Value("${rabbit.queue.name.sala.crear}")
-    private String queueCrear;
+    private String queueCrearSala;
     @Value("${rabbit.routing.key.sala.crear}")
-    private String routingKeyCrear;
+    private String routingKeyCrearSala;
     @Value("${rabbit.queue.name.sala.consultar}")
-    private String queueConsultar;
+    private String queueConsultarSala;
     @Value("${rabbit.routing.key.sala.consultar}")
-    private String routingKeyConsultar;
+    private String routingKeyConsultarSala;
     @Value("${rabbit.queue.name.sala.eliminar}")
-    private String queueEliminar;
+    private String queueEliminarSala;
     @Value("${rabbit.routing.key.sala.eliminar}")
-    private String routingKeyEliminar;
+    private String routingKeyEliminarSala;
+////////////RESERVA////////////////////////////////////
+    @Value("${rabbit.exchange.name.reserva}")
+    private String exchangeReserva;
+    @Value("${rabbit.queue.name.reserva.crear}")
+    private String queueCrearReserva;
+    @Value("${rabbit.routing.key.reserva.crear}")
+    private String routingKeyCrearReserva;
+    @Value("${rabbit.queue.name.reserva.consultar}")
+    private String queueConsultarReserva;
+    @Value("${rabbit.routing.key.reserva.consultar}")
+    private String routingKeyConsultarReserva;
+    @Value("${rabbit.queue.name.reserva.eliminar}")
+    private String queueEliminarReserva;
+    @Value("${rabbit.routing.key.reserva.eliminar}")
+    private String routingKeyEliminarReserva;
+    @Value("${rabbit.queue.name.reserva.actualizar}")
+    private String queueActualizarReserva;
+    @Value("${rabbit.routing.key.reserva.actualizar}")
+    private String routingKeyActualizarReserva;
+
 //Exchanges/////////////////////////////////////////////////
     @Bean
-    public TopicExchange exchange(){
-        return new TopicExchange(exchange);
+    public TopicExchange exchangeSala(){
+        return new TopicExchange(exchangeSala);
+    }
+
+    @Bean
+    public TopicExchange exchangeReserva(){
+        return new TopicExchange(exchangeReserva);
     }
 
 //Queues/////////////////////////////////////////////////
     @Bean
-    public Queue queueCrear(){
-        return new Queue(queueCrear);
+    public Queue queueCrearSala(){
+        return new Queue(queueCrearSala);
     }
     @Bean
-    public Queue queueConsultar(){
-        return new Queue(queueConsultar);
+    public Queue queueConsultarSala(){
+        return new Queue(queueConsultarSala);
     }
 
     @Bean
-    public Queue queueEliminar(){
-        return new Queue(queueEliminar);
+    public Queue queueEliminarSala(){
+        return new Queue(queueEliminarSala);
     }
 
-//Bingings/////////////////////////////////////////
     @Bean
-    public Binding bindingCrear(){
-        return BindingBuilder.bind(queueCrear()).to(exchange()).with(routingKeyCrear);
+    public Queue queueCrearReserva(){
+        return new Queue(queueCrearReserva);
     }
     @Bean
-    public Binding bindingConsultar(){
-        return BindingBuilder.bind(queueConsultar()).to(exchange()).with(routingKeyConsultar);
-    }
-    @Bean
-    public Binding bindingEliminar(){
-        return BindingBuilder.bind(queueEliminar()).to(exchange()).with(routingKeyEliminar);
+    public Queue queueConsultarReserva(){
+        return new Queue(queueConsultarReserva);
     }
 
+    @Bean
+    public Queue queueEliminarReserva(){
+        return new Queue(queueEliminarReserva);
+    }
 
-//SenderMessages/////////////////////////////////////////////////////////////////////////
+    @Bean
+    public Queue queueActualizarReserva(){
+        return new Queue(queueActualizarReserva);
+    }
+
+    //Bingings/////////////////////////////////////////
+    @Bean
+    public Binding bindingSalaCrear(){
+        return BindingBuilder.bind(queueCrearSala()).to(exchangeSala()).with(routingKeyCrearSala);
+    }
+    @Bean
+    public Binding bindingSalaConsultar(){
+        return BindingBuilder.bind(queueConsultarSala()).to(exchangeSala()).with(routingKeyConsultarSala);
+    }
+    @Bean
+    public Binding bindingSalaEliminar(){
+        return BindingBuilder.bind(queueEliminarSala()).to(exchangeSala()).with(routingKeyEliminarSala);
+    }
+
+    @Bean
+    public Binding bindingReservaCrear(){
+        return BindingBuilder.bind(queueCrearReserva()).to(exchangeReserva()).with(routingKeyCrearReserva);
+    }
+    @Bean
+    public Binding bindingReservaConsultar(){
+        return BindingBuilder.bind(queueConsultarReserva()).to(exchangeReserva()).with(routingKeyConsultarReserva);
+    }
+    @Bean
+    public Binding bindingReservaEliminar(){
+        return BindingBuilder.bind(queueEliminarReserva()).to(exchangeReserva()).with(routingKeyEliminarReserva);
+    }
+    @Bean
+    public Binding bindingReservaActualizar(){
+        return BindingBuilder.bind(queueActualizarReserva()).to(exchangeReserva()).with(routingKeyActualizarReserva);
+    }
+
+    //SenderMessages/////////////////////////////////////////////////////////////////////////
     @Bean
     public SalaMessageSender salaMessageSender(RabbitTemplate rabbitTemplate) {
         return new SalaMessageSender(rabbitTemplate);

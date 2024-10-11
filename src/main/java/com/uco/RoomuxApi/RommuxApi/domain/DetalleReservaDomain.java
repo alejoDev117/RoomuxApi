@@ -1,5 +1,6 @@
 package com.uco.RoomuxApi.RommuxApi.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.uco.RoomuxApi.RommuxApi.crossCutting.utils.UtilDateTime;
 import com.uco.RoomuxApi.RommuxApi.crossCutting.utils.UtilEnum;
 import com.uco.RoomuxApi.RommuxApi.crossCutting.utils.UtilText;
@@ -18,19 +19,19 @@ import java.util.UUID;
 @Getter
 @Setter
 public class DetalleReservaDomain {
-    private UUID identificador;
-    private ReservaDomain reserva;
-    private String diaSemanal;
-    private LocalTime horaInicio;
-    private LocalTime horaFin;
 
+    private UUID identificador;
+    private String diaSemanal;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm:ss")
+    private LocalTime horaInicio;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm:ss")
+    private LocalTime horaFin;
     public static DetalleReservaDomain createWithDefaults() {
         return DetalleReservaDomain.builder().
                 identificador(UtilUUID.getUuidDefaultValue()).
-                reserva(ReservaDomain.createWithDefaults()).
                 diaSemanal(UtilEnum.enumToString(DiaSemana.NO_ASINADO)).
                 horaInicio(UtilDateTime.getDefaultValueTime()).
                 horaFin(UtilDateTime.getDefaultValueTime()).build();
     }
-
+    
 }
