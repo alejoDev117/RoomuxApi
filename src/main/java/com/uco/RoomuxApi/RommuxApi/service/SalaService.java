@@ -25,6 +25,7 @@ public class SalaService {
         if(!SalaValidator.nameLengthIsValid(domain.getNombreSala())){
             throw new RoomuxApiException("Error, la longitud del nombre excede los 15 caracteres validos");
         }
+        SalaValidator.nameIsValid(domain.getNombreSala());
         if(!domain.getReservas().isEmpty()){
             throw new RoomuxApiException("Error, al crear por primera vez una sala no debe poseer reservas");
         }

@@ -1,10 +1,7 @@
 package com.uco.RoomuxApi.RommuxApi.service.validator;
 
 import com.uco.RoomuxApi.RommuxApi.crossCutting.exception.RoomuxApiException;
-import com.uco.RoomuxApi.RommuxApi.crossCutting.utils.UtilDateTime;
-import com.uco.RoomuxApi.RommuxApi.crossCutting.utils.UtilDefaultObject;
-import com.uco.RoomuxApi.RommuxApi.crossCutting.utils.UtilEnum;
-import com.uco.RoomuxApi.RommuxApi.crossCutting.utils.UtilText;
+import com.uco.RoomuxApi.RommuxApi.crossCutting.utils.*;
 import com.uco.RoomuxApi.RommuxApi.domain.DetalleReservaDomain;
 import com.uco.RoomuxApi.RommuxApi.domain.ReservaDomain;
 import com.uco.RoomuxApi.RommuxApi.domain.SalaDomain;
@@ -17,11 +14,17 @@ import jdk.jshell.execution.Util;
 
 import java.sql.PreparedStatement;
 import java.util.List;
+import java.util.UUID;
 
 public class ReservaValidator {
 
     private ReservaValidator(){
 
+    }
+    public static void idReservaIsValid(UUID id) throws RoomuxApiException {
+        if(!UtilUUID.isValidUUID(String.valueOf(id))){
+            throw new RoomuxApiException("Error, el identificador no posee un formato valido");
+        }
     }
 
     public static void reservaIsValid(ReservaDomain reservaDomain) throws Exception {
@@ -44,6 +47,9 @@ public class ReservaValidator {
         }
         if(!PersonaValidator.emailIsValid(usuarioDomain.getCorreoElectronico())){
             throw new RoomuxApiException("Error el correo electronico no posee un formato válido");
+        }
+        if(!usuarioDomain.getPassword().equals(UtilText.getDefaultTextValue())){
+            throw new RoomuxApiException("Error solo puede consultarse por el correo electronico");
         }
     }
 
@@ -78,6 +84,7 @@ public class ReservaValidator {
         if(!SalaValidator.nameLengthIsValid(salaDomain.getNombreSala())){
             throw new RoomuxApiException("Error, el nombre no posee una longitud valida");
         }
+        SalaValidator.nameIsValid(salaDomain.getNombreSala());
     }
 
     public static void detalleReservaValidator(List<DetalleReservaDomain> list) throws RoomuxApiException {

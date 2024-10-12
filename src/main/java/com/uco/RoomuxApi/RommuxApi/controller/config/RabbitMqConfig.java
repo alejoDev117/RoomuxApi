@@ -49,13 +49,13 @@ public class RabbitMqConfig {
 
 //Exchanges/////////////////////////////////////////////////
     @Bean
-    public TopicExchange exchangeSala(){
-        return new TopicExchange(exchangeSala);
+    public DirectExchange exchangeSala(){
+        return new DirectExchange(exchangeSala);
     }
 
     @Bean
-    public TopicExchange exchangeReserva(){
-        return new TopicExchange(exchangeReserva);
+    public DirectExchange exchangeReserva(){
+        return new DirectExchange(exchangeReserva);
     }
 
 //Queues/////////////////////////////////////////////////

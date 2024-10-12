@@ -25,4 +25,5 @@ public class SalaDomain {
         return SalaDomain.builder().identificador(UtilUUID.getUuidDefaultValue()).
                 nombreSala(UtilText.getDefaultTextValue()).reservas(new ArrayList<>()).build();
     }
+
 }
