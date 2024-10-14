@@ -5,6 +5,7 @@ import com.uco.RoomuxApi.RommuxApi.crossCutting.utils.UtilEmail;
 import com.uco.RoomuxApi.RommuxApi.crossCutting.utils.UtilText;
 import com.uco.RoomuxApi.RommuxApi.domain.UsuarioDomain;
 import com.uco.RoomuxApi.RommuxApi.entity.UsuarioEntity;
+import com.uco.RoomuxApi.RommuxApi.messageService.messageUsuario.UsuarioMessageSender;
 import com.uco.RoomuxApi.RommuxApi.repository.UsuarioRepository;
 import com.uco.RoomuxApi.RommuxApi.service.transformer.UsuarioTransformer;
 import com.uco.RoomuxApi.RommuxApi.service.validator.PersonaValidator;
@@ -24,17 +25,26 @@ public class UsuarioService {
     @Autowired
     private final UsuarioRepository usuarioRepository;
 
-    public UsuarioService(UsuarioRepository usuarioRepository) {
+    @Autowired
+    private final UsuarioMessageSender usuarioMessageSender;
+
+    public UsuarioService(UsuarioRepository usuarioRepository, UsuarioMessageSender usuarioMessageSender) {
         this.usuarioRepository = usuarioRepository;
+        this.usuarioMessageSender = usuarioMessageSender;
     }
 
     public void create(UsuarioDomain usuarioDomain) throws Exception {
         try {
             usuarioRepository.save(UsuarioTransformer.domainToEntity(usuarioDomain));
         } catch (DataAccessException dae) {
-            throw new PersistenceException("Error, ya existe un usuario registrado previamente con el correo electrónico");
+            throw dae;
         } catch (Exception e) {
-            throw new Exception("Ocurrió un error inesperado, intente nuevamente");
+            throw e;
+        }
+        try{
+            usuarioMessageSender.sendSalaMessage(usuarioDomain,1);
+        }catch (Exception E){
+            throw E;
         }
     }
 
@@ -100,6 +110,13 @@ public class UsuarioService {
             throw r;
         } catch (Exception e) {
             throw new Exception("Ocurrió un error inesperado, intente nuevamente");
+        }
+        try{
+            UsuarioDomain usuario = UsuarioDomain.createWithDefaults();
+            usuario.setCorreoElectronico(email);
+            usuarioMessageSender.sendSalaMessage(usuario,2);
+        }catch (Exception e){
+            throw e;
         }
     }
 }

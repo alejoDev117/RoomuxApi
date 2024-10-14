@@ -53,7 +53,7 @@ public class PersonaService {
             usuarioService.create(usuarioARegistrar);
             personaRepository.save(PersonaTransformer.domainToEntity(personaDomain));
         }catch (DataAccessException e) {
-            throw new PersistenceException("Error,ya existe un usuario registrado con ese numero de identificacion");
+            throw new RoomuxApiException("Error,ya existe un usuario registrado con ese correo electronico");
         } catch (Exception ex) {
             throw new Exception("Ocurrió un error inesperado,vuelva a intentarlo. Si el problema persiste contacte a un administrador");
         }

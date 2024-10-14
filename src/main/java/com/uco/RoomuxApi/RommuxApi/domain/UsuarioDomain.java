@@ -13,11 +13,12 @@ import java.util.UUID;
 @Getter
 @Setter
 public class UsuarioDomain {
+    private UUID identificador;
     private String correoElectronico;
     private String password;
 
     public static UsuarioDomain createWithDefaults() {
-        return UsuarioDomain.builder()
+        return UsuarioDomain.builder().identificador(UtilUUID.getUuidDefaultValue())
                 .correoElectronico(UtilEmail.getDefaultValueMail())
                 .password(UtilText.getDefaultTextValue())
                 .build();

@@ -23,7 +23,7 @@ public class PersonaEntity {
     @Column(name = "nombre", length = 30)
     private String nombre;
 
-    @Column(name = "numeroIdentificacion", length = 12, unique = true)
+    @Column(name = "numeroIdentificacion", length = 12)
     private String id;
 
 

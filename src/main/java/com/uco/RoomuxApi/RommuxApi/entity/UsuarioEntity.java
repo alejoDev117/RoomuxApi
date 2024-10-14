@@ -14,7 +14,12 @@ import java.util.UUID;
 @Setter
 @Table(name = "usuario")
 public class UsuarioEntity {
+
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "identificador", columnDefinition = "uuid", updatable = false, nullable = false)
+    private UUID identificador;
+
     @Column(name = "correoElectronico",length = 30,unique = true)
     private String correoElectronico;
 
