@@ -17,12 +17,12 @@ public class UsuarioTransformer {
     }
 
     public static UsuarioEntity domainToEntity(UsuarioDomain usuario){
-        return UsuarioEntity.builder().correoElectronico(usuario.getCorreoElectronico()).
+        return UsuarioEntity.builder().identificador(usuario.getIdentificador()).correoElectronico(usuario.getCorreoElectronico()).
                 password(usuario.getPassword()).build();
     }
 
     public static UsuarioDomain entityToDomain(UsuarioEntity usuario){
-        return UsuarioDomain.builder().correoElectronico(usuario.getCorreoElectronico()).
+        return UsuarioDomain.builder().identificador(usuario.getIdentificador()).correoElectronico(usuario.getCorreoElectronico()).
                 password(usuario.getPassword()).build();
     }
     public static List<UsuarioDomain> entityListToDomainList(List<UsuarioEntity> list) {

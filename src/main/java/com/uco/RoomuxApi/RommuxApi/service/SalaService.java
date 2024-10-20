@@ -1,22 +1,39 @@
 package com.uco.RoomuxApi.RommuxApi.service;
 
 import com.uco.RoomuxApi.RommuxApi.crossCutting.exception.RoomuxApiException;
+import com.uco.RoomuxApi.RommuxApi.crossCutting.utils.UtilDefaultObject;
 import com.uco.RoomuxApi.RommuxApi.crossCutting.utils.UtilText;
 import com.uco.RoomuxApi.RommuxApi.crossCutting.utils.UtilUUID;
 import com.uco.RoomuxApi.RommuxApi.domain.SalaDomain;
-import com.uco.RoomuxApi.RommuxApi.messageService.messageSala.SalaMessageSender;
+import com.uco.RoomuxApi.RommuxApi.entity.SalaEntity;
+import com.uco.RoomuxApi.RommuxApi.repository.SalaRepository;
+import com.uco.RoomuxApi.RommuxApi.service.transformer.ReservaTransformer;
+import com.uco.RoomuxApi.RommuxApi.service.transformer.SalaTransformer;
 import com.uco.RoomuxApi.RommuxApi.service.validator.SalaValidator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
+import javax.xml.crypto.Data;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Service
 public class SalaService {
 
+
     @Autowired
-    private SalaMessageSender salaMessageSender;
+    private final SalaRepository salaRepository;
+
+    @Autowired
+    private final ReservaService reservaService;
+
+    public SalaService(SalaRepository salaRepository, ReservaService reservaService) {
+        this.salaRepository = salaRepository;
+        this.reservaService = reservaService;
+    }
 
     public void create(SalaDomain domain) throws Exception {
         if(domain.getNombreSala().equals(UtilText.getDefaultTextValue())){
@@ -30,35 +47,47 @@ public class SalaService {
             throw new RoomuxApiException("Error, al crear por primera vez una sala no debe poseer reservas");
         }
         try{
-            salaMessageSender.sendSalaMessage(domain,1);
-        }catch (RoomuxApiException r){
-            throw  r;
+            salaRepository.save(SalaTransformer.domainToEntity(domain));
+        }catch (DataAccessException r){
+            throw  new RoomuxApiException("Error, ya existe una sala registrada con ese nombre");
         }catch (Exception ie){
             throw new Exception("Ocurrió un error inesperado intente nuevamente");
         }
     }
 
-    public void consultByName(SalaDomain domain) throws Exception {
+    public SalaDomain consultByName(SalaDomain domain) throws Exception {
+        SalaEntity sala = null;
         if(domain.getNombreSala().equals(UtilText.getDefaultTextValue())){
             throw new RoomuxApiException("Error se debe ingresar el nombre de la sala para consultar");
         }
         try{
-            salaMessageSender.sendSalaMessage(domain,2);
-        }catch (RoomuxApiException r) {
-            throw r;
+           sala = salaRepository.findByNombre(domain.getNombreSala());
+           sala.setReservas(ReservaTransformer.domainListToEntityList(reservaService.consultBySala(domain.getNombreSala())));
+        }catch (NullPointerException r) {
+            throw new RoomuxApiException("Error,no se encontró una sala registrada con ese nombre");
         }catch (Exception ie){
             throw new Exception("Ocurrió un error inesperado intente nuevamente");
         }
+        return SalaTransformer.entityToDomain(sala);
     }
 
-    public  void consultAll(SalaDomain domain) throws Exception {
-        domain.setNombreSala("ALL");
-        try{
-            salaMessageSender.sendSalaMessage(domain,2);
-        }catch (RoomuxApiException r){
-            throw  r;
+    public List<SalaDomain> consultAll() throws Exception {
+       List<SalaEntity> lista = new ArrayList<>();
+        try {
+           lista =  salaRepository.findAll();
+           for (SalaEntity sala: lista){
+               sala.setReservas(ReservaTransformer.domainListToEntityList(reservaService.consultBySala(sala.getNombre())));
+           }
+        }catch (DataAccessException r){
+            throw  new RoomuxApiException("Error, no hay registros");
         }catch (Exception ie){
+            ie.printStackTrace();
             throw new Exception("Ocurrió un error inesperado intente nuevamente");
+        }
+        if(lista.isEmpty()){
+            return new ArrayList<>();
+        }else {
+            return SalaTransformer.entityListToDomainList(lista);
         }
     }
 
@@ -66,12 +95,10 @@ public class SalaService {
         if(name.equals(UtilText.getDefaultTextValue())){
             throw new RoomuxApiException("Error se debe ingresar el nombre de la sala para eliminar");
         }
-        SalaDomain domain = SalaDomain.createWithDefaults();
-        domain.setNombreSala(name);
         try{
-            salaMessageSender.sendSalaMessage(domain,3);
-        }catch (RoomuxApiException r){
-            throw  r;
+            salaRepository.deleteByNombre(name);
+        }catch (DataAccessException r){
+            throw new RoomuxApiException("Error, no es posible encontrar una sala registrada con ese nombre");
         }catch (Exception ie){
             throw new Exception("Ocurrió un error inesperado intente nuevamente");
         }
@@ -80,14 +107,15 @@ public class SalaService {
         if(uuid.equals(UtilUUID.getUuidDefaultValue())){
             throw new RoomuxApiException("Error se debe ingresar el identificador para eliminar");
         }
-        SalaDomain domain = SalaDomain.createWithDefaults();
-        domain.setIdentificador(uuid);
+
         try{
-            salaMessageSender.sendSalaMessage(domain,3);
-        }catch (RoomuxApiException r){
-            throw  r;
+            salaRepository.deleteById(uuid);
+        }catch (DataAccessException r){
+            throw new RoomuxApiException("Error, no es posible encontrar una sala registrada con ese nombre");
         }catch (Exception ie){
             throw new Exception("Ocurrió un error inesperado intente nuevamente");
         }
     }
+
+
 }

@@ -10,13 +10,13 @@ public class UtilDefaultObject {
 
     };
 
-
-    public static Object defaultValue(Object valorEntrada, Object valorPorDefecto){
-        if(isDefault(valorEntrada)){
+    public static <T> T defaultValue(T valorEntrada, T valorPorDefecto) {
+        if (isDefault(valorEntrada)) {
             return valorPorDefecto;
         }
-        return  valorEntrada;
+        return valorEntrada;
     }
+
 
     private static boolean isDefault(Object valor){
         return valor.equals(null);

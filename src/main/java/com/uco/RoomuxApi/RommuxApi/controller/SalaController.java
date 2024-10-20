@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -34,11 +35,11 @@ public class SalaController {
     }
 
     @GetMapping("sala")
-    public ResponseEntity<RoomuxResponse<String>> consultByName(@RequestBody SalaDomain sala){
-        RoomuxResponse<String> response = new RoomuxResponse<>();
+    public ResponseEntity<RoomuxResponse<SalaDomain>> consultByName(@RequestBody SalaDomain sala){
+        RoomuxResponse<SalaDomain> response = new RoomuxResponse<>();
         try {
-            response.setMessage("Se envio correctamente");
-            salaService.consultByName(sala);
+            response.setMessage("Exito en la operacion");
+            response.setData(salaService.consultByName(sala));
             return new ResponseEntity<>(response,HttpStatus.OK);
         }catch (RoomuxApiException r){
             response.setMessage(r.getMessage());
@@ -50,11 +51,11 @@ public class SalaController {
     }
 
     @GetMapping("sala/all")
-    public ResponseEntity<RoomuxResponse<String>> consultAll(@RequestBody SalaDomain sala){
-        RoomuxResponse<String> response = new RoomuxResponse<>();
+    public ResponseEntity<RoomuxResponse<List<SalaDomain>>> consultAll(){
+        RoomuxResponse<List<SalaDomain>> response = new RoomuxResponse<>();
         try {
-            response.setMessage("Se envio correctamente");
-            salaService.consultAll(sala);
+            response.setMessage("Exito en la operacion");
+            response.setData(salaService.consultAll());
             return new ResponseEntity<>(response,HttpStatus.OK);
         }catch (RoomuxApiException r){
             response.setMessage(r.getMessage());
@@ -70,7 +71,7 @@ public class SalaController {
     public ResponseEntity<RoomuxResponse<String>> create(@RequestBody SalaDomain sala){
         RoomuxResponse<String> response = new RoomuxResponse<>();
         try {
-            response.setMessage("Se envio correctamente");
+            response.setMessage("Se creo correctamente");
             salaService.create(sala);
             return new ResponseEntity<>(response, HttpStatus.OK);
         }catch(RoomuxApiException r){
@@ -86,7 +87,7 @@ public class SalaController {
     public ResponseEntity<RoomuxResponse<String>> deleteByName(@RequestParam String name){
         RoomuxResponse response = new RoomuxResponse();
         try{
-            response.setData("Se envio correctamente");
+            response.setData("Se elimino correctamente");
             salaService.deleteByName(name);
             return new ResponseEntity<>(response,HttpStatus.OK);
         }catch (RoomuxApiException r){
@@ -102,7 +103,7 @@ public class SalaController {
     public ResponseEntity<RoomuxResponse<String>> deleteById(@RequestParam UUID uuid){
         RoomuxResponse response = new RoomuxResponse();
         try{
-            response.setData("Se envio correctamente");
+            response.setData("Se elimino correctamente");
             salaService.deleteByUUID(uuid);
             return new ResponseEntity<>(response,HttpStatus.OK);
         }catch (RoomuxApiException r){

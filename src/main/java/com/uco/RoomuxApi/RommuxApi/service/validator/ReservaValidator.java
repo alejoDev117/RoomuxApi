@@ -32,7 +32,7 @@ public class ReservaValidator {
             autorValidator(reservaDomain.getAutor());
             datesValidator(reservaDomain);
             typesValidator(reservaDomain);
-            salaValidator(reservaDomain.getSala());
+            salaValidator(reservaDomain.getNombreSala());
             detalleReservaValidator(reservaDomain.getDetalleReserva());
         }catch (RoomuxApiException r){
             throw r;
@@ -77,14 +77,14 @@ public class ReservaValidator {
         }
     }
 
-    public static void salaValidator(SalaDomain salaDomain) throws RoomuxApiException {
-        if(salaDomain.getNombreSala().equals(UtilText.getDefaultTextValue())){
+    public static void salaValidator(String salaDomain) throws RoomuxApiException {
+        if(salaDomain.equals(UtilText.getDefaultTextValue())){
             throw new RoomuxApiException("Error, la informacion minima de la sala debe estar presente");
         }
-        if(!SalaValidator.nameLengthIsValid(salaDomain.getNombreSala())){
+        if(!SalaValidator.nameLengthIsValid(salaDomain)){
             throw new RoomuxApiException("Error, el nombre no posee una longitud valida");
         }
-        SalaValidator.nameIsValid(salaDomain.getNombreSala());
+        SalaValidator.nameIsValid(salaDomain);
     }
 
     public static void detalleReservaValidator(List<DetalleReservaDomain> list) throws RoomuxApiException {

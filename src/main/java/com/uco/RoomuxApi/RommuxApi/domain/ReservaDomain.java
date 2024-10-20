@@ -3,6 +3,7 @@ package com.uco.RoomuxApi.RommuxApi.domain;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.uco.RoomuxApi.RommuxApi.crossCutting.utils.UtilDateTime;
 import com.uco.RoomuxApi.RommuxApi.crossCutting.utils.UtilEnum;
+import com.uco.RoomuxApi.RommuxApi.crossCutting.utils.UtilText;
 import com.uco.RoomuxApi.RommuxApi.crossCutting.utils.UtilUUID;
 import com.uco.RoomuxApi.RommuxApi.domain.types.Frecuencia;
 import com.uco.RoomuxApi.RommuxApi.domain.types.TipoReserva;
@@ -31,7 +32,7 @@ public class ReservaDomain  {
         private String frecuencia;
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
         private LocalDateTime horaCreacion;
-        private SalaDomain sala;
+        private String nombreSala;
         private List<DetalleReservaDomain> detalleReserva;
 
 
@@ -42,7 +43,7 @@ public class ReservaDomain  {
                 tipoReserva(UtilEnum.enumToString(TipoReserva.NO_ASIGNADO)).
                 frecuencia(UtilEnum.enumToString(Frecuencia.NO_ASIGNADO)).
                 horaCreacion(UtilDateTime.getDefaultValueDateTime()).
-                sala(SalaDomain.createWithDefaults()).detalleReserva(new ArrayList<>()).build();
+                nombreSala(UtilText.getDefaultTextValue()).build();
     }
 
 
