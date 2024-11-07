@@ -28,6 +28,7 @@ public class UsuarioTransformer {
     public static List<UsuarioDomain> entityListToDomainList(List<UsuarioEntity> list) {
         return list.stream()
                 .map(entity -> UsuarioDomain.builder()
+                        .identificador(entity.getIdentificador())
                         .correoElectronico(entity.getCorreoElectronico())
                         .password(entity.getPassword())
                         .build())

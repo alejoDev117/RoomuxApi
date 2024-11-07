@@ -17,9 +17,6 @@ public interface SalaRepository extends JpaRepository<SalaEntity, UUID> {
     @Query(value = "SELECT * FROM sala WHERE nombre = ?1", nativeQuery = true)
     SalaEntity findByNombre(String nombre);
 
-    @Query(value = "SELECT * FROM reserva WHERE sala= ?1",nativeQuery = true)
-    List<ReservaEntity> findReservaListByName(String sala);
-
     @Modifying
     @Transactional
     @Query(value = "DELETE FROM sala WHERE nombre = ?1", nativeQuery = true)

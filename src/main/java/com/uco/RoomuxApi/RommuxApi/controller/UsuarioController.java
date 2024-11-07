@@ -34,7 +34,7 @@ public class UsuarioController {
         }
     }
 
-    @GetMapping("/login")
+    @PostMapping("/login")
     public ResponseEntity<RoomuxResponse<String>> login(@RequestBody UsuarioDomain domain) {
         RoomuxResponse<String> response = new RoomuxResponse<>();
         try{
